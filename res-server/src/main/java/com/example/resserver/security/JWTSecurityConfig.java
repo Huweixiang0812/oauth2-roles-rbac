@@ -28,12 +28,13 @@ public class JWTSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.exceptionHandling().accessDeniedHandler(new AccessDeniedHandler() {
             @Override
-            public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+            public void handle(HttpServletRequest request, HttpServletResponse response,
+                               AccessDeniedException accessDeniedException) throws IOException, ServletException {
                 response.getWriter().println("{code:403,msg:Access is denied}");
             }
         });
-        JwtAuthenticationConverter jwtAuthenticationConverter =  new  JwtAuthenticationConverter () ;
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new  JwtRoleConverter()) ;
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new JwtRoleConverter());
         http.authorizeRequests().accessDecisionManager(accessDecisionManager()).anyRequest().authenticated();
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt().jwtAuthenticationConverter(jwtAuthenticationConverter));
 
@@ -46,11 +47,7 @@ public class JWTSecurityConfig {
     @Bean
     //实例化决策器对象
     public AccessDecisionManager accessDecisionManager() {
-        List<AccessDecisionVoter<? extends Object>> decisionVoters
-                = Arrays.asList(
-                new WebExpressionVoter(),
-                roleBasedVoter,
-                new AuthenticatedVoter());
+        List<AccessDecisionVoter<? extends Object>> decisionVoters = Arrays.asList(new WebExpressionVoter(), roleBasedVoter, new AuthenticatedVoter());
         return new UnanimousBased(decisionVoters);
     }
 }

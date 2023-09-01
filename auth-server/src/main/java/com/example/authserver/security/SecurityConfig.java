@@ -49,7 +49,7 @@ public class SecurityConfig {
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
             throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-        //设置默认的登录页面地址
+        //default login page
         http.exceptionHandling((exceptions) -> exceptions
                 .authenticationEntryPoint(
                         new LoginUrlAuthenticationEntryPoint("/login"))
@@ -72,7 +72,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorize) -> authorize
                         .anyRequest().authenticated()
                 )
-                //采用表单认证方式
+                //form login authentication
                 .formLogin(Customizer.withDefaults());
 
         return http.build();
@@ -101,27 +101,31 @@ public class SecurityConfig {
      */
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
+        // Define a registered client with a unique ID.
         RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+                // Set the client ID and client secret (in plaintext, for demonstration purposes).
                 .clientId("messaging-client")
-                .clientSecret("{noop}secret") //不加密
-                //客户端接入通过SECRET密码认证方式接入
+                .clientSecret("{noop}secret") // Not encrypted
+                // Specify the client authentication method as CLIENT_SECRET_BASIC.
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                //客户端允许使用的授权模式，授权码模式、Refresh_Token刷新令牌、客户端认证
+                // Define the allowed authorization grant types for this client.
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                //此客户端允许跳转的URI注册地址
+                // Register the URIs where this client is allowed to redirect to after authorization.
                 .redirectUri("http://auth-server:8080/authorized")
                 .redirectUri("http://client:8082/login/oauth2/code/demo")
-                //此客户端允许使用的授权范围
+                // Define the scopes (permissions) that this client can request.
                 .scope("message.read")
                 .scope("message.write")
-                //是否开启用户手动确认，fasle为自动确认
+                // Specify whether user manual consent is required (false for automatic consent).
                 .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
                 .build();
 
+        // Create an in-memory repository and return the registered client.
         return new InMemoryRegisteredClientRepository(registeredClient);
     }
+
 
     /**
      * 通过非对称加密生成ACCESS_TOKEN(JWT)的签名部分。
