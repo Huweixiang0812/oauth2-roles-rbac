@@ -1,0 +1,28 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          demo:
+            client-id: messaging-client
+            client-secret: secret
+            provider: demo-provider
+            authorization-grant-type: authorization_code
+            #??????URI???http://client:8082/login/oauth2/code/{profile-name}
+            redirect-uri: http://client:8082/login/oauth2/code/demo
+            scope:
+              - message.read
+        provider:
+          demo-provider:
+            authorization-uri: http://auth-server:8080/oauth2/authorize
+            token-uri: http://auth-server:8080/oauth2/token
+            user-info-uri: http://res-server:8081/sso/user
+            user-name-attribute: name
+  codec:
+    log-request-details: true
+server:
+  port: 8082
+logging:
+  level:
+    root: debug
+

@@ -1,0 +1,16 @@
+server:
+  port: 8081
+logging:
+  level:
+    root: debug
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://auth-server:8080/oauth2/jwks
+  datasource:
+    url: jdbc:mysql://localhost:3306/res-db
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: password
