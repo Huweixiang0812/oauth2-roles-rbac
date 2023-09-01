@@ -8,7 +8,7 @@ spring:
             client-secret: secret
             provider: demo-provider
             authorization-grant-type: authorization_code
-            #??????URI???http://client:8082/login/oauth2/code/{profile-name}
+            # default uri :http://client:8082/login/oauth2/code/{profile-name}
             redirect-uri: http://client:8082/login/oauth2/code/demo
             scope:
               - message.read
