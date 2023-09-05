@@ -39,20 +39,17 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
-            throws Exception {
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         // Default login page
-        http.exceptionHandling((exceptions) -> exceptions
-                .authenticationEntryPoint(
-                        new LoginUrlAuthenticationEntryPoint("/login"))
-        );
+        http.exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
 
         return http.build();
     }
@@ -66,11 +63,8 @@ public class SecurityConfig {
      */
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-            throws Exception {
-        http.authorizeHttpRequests((authorize) -> authorize
-                        .anyRequest().authenticated()
-                )
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
                 // Form login authentication
                 .formLogin(Customizer.withDefaults());
 
@@ -84,11 +78,7 @@ public class SecurityConfig {
      */
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails userDetails = User.withDefaultPasswordEncoder()
-                .username("user")
-                .password("password")
-                .roles("USER")
-                .build();
+        UserDetails userDetails = User.withDefaultPasswordEncoder().username("user").password("password").roles("USER").build();
 
         return new InMemoryUserDetailsManager(userDetails);
     }
@@ -103,23 +93,17 @@ public class SecurityConfig {
         // Define a registered client with a unique ID.
         RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 // Set the client ID and client secret (in plaintext, for demonstration purposes).
-                .clientId("messaging-client")
-                .clientSecret("{noop}secret") // Not encrypted
+                .clientId("messaging-client").clientSecret("{noop}secret") // Not encrypted
                 // Specify the client authentication method as CLIENT_SECRET_BASIC.
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 // Define the allowed authorization grant types for this client.
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE).authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN).authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 // Register the URIs where this client is allowed to redirect to after authorization.
-                .redirectUri("http://auth-server:8080/authorized")
-                .redirectUri("http://client:8082/login/oauth2/code/demo")
+                .redirectUri("http://auth-server:8080/authorized").redirectUri("http://client:8082/login/oauth2/code/demo")
                 // Define the scopes (permissions) that this client can request.
-                .scope("message.read")
-                .scope("message.write")
+                .scope("message.read").scope("message.write")
                 // Specify whether user manual consent is required (false for automatic consent).
-                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
-                .build();
+                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build()).build();
 
         // Create an in-memory repository and return the registered client.
         return new InMemoryRegisteredClientRepository(registeredClient);
@@ -136,10 +120,7 @@ public class SecurityConfig {
         KeyPair keyPair = generateRsaKey();
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-        RSAKey rsaKey = new RSAKey.Builder(publicKey)
-                .privateKey(privateKey)
-                .keyID(UUID.randomUUID().toString())
-                .build();
+        RSAKey rsaKey = new RSAKey.Builder(publicKey).privateKey(privateKey).keyID(UUID.randomUUID().toString()).build();
         JWKSet jwkSet = new JWKSet(rsaKey);
         return new ImmutableJWKSet<>(jwkSet);
     }
@@ -186,9 +167,9 @@ public class SecurityConfig {
                 // Write to JWT
             /*
             Payload
-            {"sub":"user","aud":"messaging-client","nbf":1669021408,
-            "scope":["message.read"],"roles":["ROLE_USER"],
-            "iss":"http:\/\/auth-server:8080","exp":1669021708,"iat":1669021408}
+            {"sub":"user","aud":"messaging-client","nbf":1693904007,"scope":["message.read"],
+            "roles":["ROLE_USER"],"iss":"http:\/\/auth-server:8080",
+            "exp":1693904307,"iat":1693904007}
              */
                 context.getClaims().claim("roles", roles);
             }
