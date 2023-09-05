@@ -39,7 +39,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -49,7 +48,7 @@ public class SecurityConfig {
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
             throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-        //default login page
+        // Default login page
         http.exceptionHandling((exceptions) -> exceptions
                 .authenticationEntryPoint(
                         new LoginUrlAuthenticationEntryPoint("/login"))
@@ -59,7 +58,7 @@ public class SecurityConfig {
     }
 
     /**
-     * 这个也是个Spring Security的过滤器链，用于Spring Security的身份认证。
+     * This is also a Spring Security filter chain used for Spring Security authentication.
      *
      * @param http
      * @return
@@ -72,14 +71,14 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorize) -> authorize
                         .anyRequest().authenticated()
                 )
-                //form login authentication
+                // Form login authentication
                 .formLogin(Customizer.withDefaults());
 
         return http.build();
     }
 
     /**
-     * 配置用户信息，或者配置用户数据来源，主要用于用户的检索。
+     * Configure user information or the source of user data, mainly used for user retrieval.
      *
      * @return
      */
@@ -95,7 +94,7 @@ public class SecurityConfig {
     }
 
     /**
-     * oauth2 用于第三方认证，RegisteredClientRepository 主要用于管理第三方（每个第三方就是一个客户端）
+     * OAuth2 for third-party authentication. RegisteredClientRepository is mainly used to manage third parties (each third party is a client).
      *
      * @return
      */
@@ -128,7 +127,7 @@ public class SecurityConfig {
 
 
     /**
-     * 通过非对称加密生成ACCESS_TOKEN(JWT)的签名部分。
+     * Generate the signature part of ACCESS_TOKEN (JWT) through asymmetric encryption.
      *
      * @return
      */
@@ -146,7 +145,7 @@ public class SecurityConfig {
     }
 
     /**
-     * 生成秘钥对，为jwkSource提供服务，私钥服务器自身持有，公钥对外开放。
+     * Generate a key pair for use by jwkSource. The private key is held by the server, and the public key is exposed externally.
      *
      * @return
      */
@@ -163,7 +162,7 @@ public class SecurityConfig {
     }
 
     /**
-     * 配置Authorization Server Provider实例，默认配置即可
+     * Configure Authorization Server Provider instance. Default configuration is sufficient.
      *
      * @return
      */
@@ -175,16 +174,16 @@ public class SecurityConfig {
     @Bean
     OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
         return context -> {
-            //判断JWT类型是否为ACCESS_TOKEN
+            // Check if the JWT type is ACCESS_TOKEN
             if (context.getTokenType() == OAuth2TokenType.ACCESS_TOKEN) {
-                //获得认证对象，即当前登录的用户
+                // Get the authentication object, which is the currently logged-in user
                 Authentication principal = context.getPrincipal();
                 List roles = new ArrayList<>();
-                //得到该用户所有的权限信息，即ROLE角色，循环遍历放入roles集合
+                // Get all the permissions (ROLE roles) for this user, loop through and add them to the roles list
                 for (GrantedAuthority authority : principal.getAuthorities()) {
                     roles.add(authority.getAuthority());
                 }
-                //写入JWT
+                // Write to JWT
             /*
             Payload
             {"sub":"user","aud":"messaging-client","nbf":1669021408,

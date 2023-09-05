@@ -12,9 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 @RestController
-
 public class ProductController {
 
     private List<Product> products = new ArrayList<>();
@@ -26,13 +24,14 @@ public class ProductController {
         products.add(Product.from("Short (White)", "White color short", 60, "USD"));
         products.add(Product.from("Short (Black)", "Black color short", 55, "USD"));
     }
-    //资源接口
+
+    // Resource Endpoint
     @GetMapping("/products")
     public List<Product> getProducts() {
         return products;
     }
 
-    //获取用户信息
+    // Get User Information
     @GetMapping(value = "/sso/user")
     public Map<String, String> user(Principal principal) {
         if (principal != null) {
@@ -42,5 +41,4 @@ public class ProductController {
         }
         return null;
     }
-
 }

@@ -45,9 +45,10 @@ public class JWTSecurityConfig {
     RoleBasedVoter roleBasedVoter;
 
     @Bean
-    //实例化决策器对象
+// Instantiate the Access Decision Manager
     public AccessDecisionManager accessDecisionManager() {
         List<AccessDecisionVoter<? extends Object>> decisionVoters = Arrays.asList(new WebExpressionVoter(), roleBasedVoter, new AuthenticatedVoter());
         return new UnanimousBased(decisionVoters);
     }
+
 }
